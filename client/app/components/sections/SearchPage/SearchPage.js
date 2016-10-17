@@ -5,6 +5,7 @@ import styleVariables from '../../../assets/styles/variables';
 
 import ListingCard from '../../composites/ListingCard/ListingCard';
 import ListingCardPanel from '../../composites/ListingCardPanel/ListingCardPanel';
+import FlashMessage from '../../composites/FlashMessage/FlashMessage';
 
 import css from './SearchPage.css';
 
@@ -40,6 +41,9 @@ class SearchPage extends Component {
         this.listings.map((listing) =>
           r(ListingCard, this.listingProps(listing, marketplaceColor1))
       )),
+      r(FlashMessage, {
+        notifications: this.props.marketplace.notifications,
+      }),
     ]);
   }
 }
@@ -58,6 +62,11 @@ SearchPage.propTypes = {
   marketplace: PropTypes.shape({
     marketplaceColor1: string,
     location: string,
+    notifications: PropTypes.shape({
+      notice: string,
+      warning: string,
+      error: string,
+    }),
   }),
 };
 
