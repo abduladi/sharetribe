@@ -7,6 +7,7 @@ import Immutable from 'immutable';
 import { initialize as initializeI18n } from '../utils/i18n';
 import { subset } from '../utils/routes';
 
+import FlashNotificationModel from '../models/FlashNotificationModel';
 import reducers from '../reducers/reducersIndex';
 import SearchPageContainer from '../components/sections/SearchPage/SearchPageContainer';
 import { SearchPageModel } from '../components/sections/SearchPage/SearchPage';
@@ -32,6 +33,22 @@ const listingsToMap = (listings) =>
     return acc.set(listing.id, listing);
   }, new Immutable.Map());
 
+const systemNotificationsToList = (serverNotifications) => {
+  const alerts = Immutable.List().asMutable();
+  for (const prop in serverNotifications) {
+    if (serverNotifications.hasOwnProperty(prop)) {
+      alerts.push(new FlashNotificationModel({
+        id: prop,
+        type: prop,
+        content: serverNotifications[prop],
+        isRead: false,
+      }));
+    }
+  }
+  return alerts.asImmutable();
+};
+
+
 export default (props) => {
   const locale = props.i18n.locale;
   const defaultLocale = props.i18n.defaultLocale;
@@ -56,7 +73,15 @@ export default (props) => {
     currentPage: rawListings.map((l) => l.get(':id')),
   });
 
-  const combinedProps = Object.assign({}, { marketplace: props.marketplace }, { searchPage, routes, listings, profiles });
+  const flashNotifications = systemNotificationsToList(props.marketplace.notifications);
+
+  const combinedProps = Object.assign({}, { marketplace: props.marketplace }, {
+    flashNotifications,
+    listings,
+    profiles,
+    routes,
+    searchPage,
+  });
   const combinedReducer = combineReducers(reducers);
 
   const store = applyMiddleware(middleware)(createStore)(combinedReducer, combinedProps);
