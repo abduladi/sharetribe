@@ -5,7 +5,7 @@ import styleVariables from '../../../assets/styles/variables';
 
 import ListingCard from '../../composites/ListingCard/ListingCard';
 import ListingCardPanel from '../../composites/ListingCardPanel/ListingCardPanel';
-import FlashMessage from '../../composites/FlashMessage/FlashMessage';
+import FlashNotification from '../../composites/FlashNotification/FlashNotification';
 
 import css from './SearchPage.css';
 
@@ -41,8 +41,9 @@ class SearchPage extends Component {
         this.listings.map((listing) =>
           r(ListingCard, this.listingProps(listing, marketplaceColor1))
       )),
-      r(FlashMessage, {
-        notifications: this.props.marketplace.notifications,
+      r(FlashNotification, {
+        actions: this.props.actions,
+        messages: this.props.flashNotifications,
       }),
     ]);
   }
@@ -55,18 +56,17 @@ export const SearchPageModel = Immutable.Record({
   listings: new Immutable.List(),
 });
 
-const { instanceOf, string } = PropTypes;
+const { func, instanceOf, shape, string } = PropTypes;
 
 SearchPage.propTypes = {
+  actions: shape({
+    removeFlashNotification: func.isRequired,
+  }).isRequired,
+  flashNotifications: instanceOf(Immutable.List).isRequired,
   searchPage: instanceOf(SearchPageModel).isRequired,
   marketplace: PropTypes.shape({
     marketplaceColor1: string,
     location: string,
-    notifications: PropTypes.shape({
-      notice: string,
-      warning: string,
-      error: string,
-    }),
   }),
 };
 
